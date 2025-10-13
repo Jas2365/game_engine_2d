@@ -42,7 +42,6 @@ public:
   ID2D1HwndRenderTarget* target() const { return m_target; }
   IDWriteFactory* text_factory() const { return m_dwrite_factory; }
 
-  inline HWND window() { return m_hwnd; }
 private:
   HWND m_hwnd                         = nullptr;
   ID2D1Factory* m_factory             = nullptr;
