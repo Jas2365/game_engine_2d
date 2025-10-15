@@ -9,7 +9,11 @@
 #include <vector>
 #include <cassert>
 
-Graphics2D::Graphics2D() {}
+Graphics2D& Graphics2D::get() {
+    static Graphics2D instance;
+    return instance;
+}
+
 Graphics2D::~Graphics2D() {
     if(m_brush) m_brush->Release();
     if(m_target) m_target->Release();
