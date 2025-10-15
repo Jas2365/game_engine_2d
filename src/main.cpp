@@ -4,77 +4,114 @@
 #include <Camera2D.hpp>
 #include <cmath>
 #include <Input.hpp>
+#include <Time.hpp>
+#include <Colors.hpp>
 
-screen_t screen = { 800, 600 };
+
+screen_t window_screen = { 800, 600 };
+float offset_window_width = 15;
+float offset_window_height = 40;
+screen_t visible_screen = { 800 - offset_window_width, 600 - offset_window_height };
+
+class Ball {
+private:
+    Graphics2D* m_gfx;
+    circle_t m_ball;
+    color_t m_color;
+    pos2_t m_ball_speed = {100.f, 100.f};
+    screen_t m_screen;
+
+public:
+    Ball(Graphics2D* gfx, screen_t screen, circle_t circle, color_t color) : m_gfx(gfx), m_screen(screen),  m_ball(circle), m_color(color) {}
+    
+    void draw(){
+        m_gfx->fill_circle(m_ball, m_color);
+        m_gfx->draw_circle(m_ball, color_c::white_c);
+    }
+
+    void update(float dt) {
+        
+        m_ball.x += m_ball_speed.x * dt;
+        m_ball.y += m_ball_speed.y * dt;
+        
+        // bounce hor
+        if(m_ball.x - m_ball.r < 0){
+            m_ball.x = m_ball.r;
+            m_ball_speed.x *= -1;
+        }
+
+        if(m_ball.x + m_ball.r  >= m_screen.width){
+            m_ball.x = m_screen.width - m_ball.r;
+            m_ball_speed.x *= -1;
+        }
+
+        if(m_ball.y - m_ball.r < 0){
+            m_ball.y = m_ball.r;
+            m_ball_speed.y *= -1;
+        }
+
+        if(m_ball.y + m_ball.r >= m_screen.height){
+            m_ball.y = m_screen.height - m_ball.r;
+            m_ball_speed.y *= -1;
+        }
+
+    }
+
+};
+
 
 int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE, PWSTR, int){
    
     Graphics2D gfx;
+    Graphics2D* gfx_p = &gfx;
 
-    color_t blue = { 0, 0, 255.f };
-    color_t black = { 0, 0, 0 };
-    color_t background_c = { 0.1f, 0.1f, 0.15f };
+    color_t blue         = {0, 0, 255 };
+    color_t black        = {0, 0, 0 };
+    color_t white        = {255, 255, 255 };
+    color_t background_c = {1, 1, 15 };
 
-    rect_t camera_x_rect = {10,10,300,30};
-    rect_t camera_y_rect = {10,40,300,30};
-    rect_t zoom_rect = {10,70,300,30};
-
-    if(!gfx.init(hInst, screen.width, screen.height, L"2D Engine")) return 0;
+    if(!gfx.init(hInst, window_screen, L"2D Engine")) return 0;
 
     Input::init();
+    Time::init();
 
-    Sprite brown_ball(&gfx, L"assets/sprite_ball_brown.png");
-    Text hud(&gfx, L"Consolas", 28.0f);
     Camera2D camera;    
+    // Text hud(&gfx, L"Consolas", 28.0f);
+    // hud.set_color(white);
 
-    rect_t _brown_ball_coords = {300, 200, 128, 128};
+    circle_t _ball = { visible_screen.width /2,  visible_screen.height /2, 10};
+    rect_t block = { 50, 50, 50, 50};
 
-    rect_t block = { 100, 100, 100, 100};
+    Ball ball(gfx_p, visible_screen, _ball, color_c::blue_c);
 
-    float cam_speed = 5.0f;
-    float zoom_speed = 0.02f;
+    float block_speed = 400.f;
 
     while(gfx.process_messages()) {
-        
+        Time::update();
+        float dt = Time::delta_time(); // seconds
+
         Input::update();
 
-        // keyboard
-        if(Input::is_key_down('W')) camera.move(0, -cam_speed);
-        if(Input::is_key_down('S')) camera.move(0, cam_speed);
-        if(Input::is_key_down('A')) camera.move(-cam_speed, 0);
-        if(Input::is_key_down('D')) camera.move(cam_speed, 0);
-        
-        if(Input::is_key_down('Q')) camera.set_zoom(camera.zoom() - zoom_speed);
-        if(Input::is_key_down('E')) camera.set_zoom(camera.zoom() + zoom_speed);
-        
-        if(Input::is_key_down(VK_LEFT)) camera.set_rotation(camera.rotation_deg() - 1.0f);
-        if(Input::is_key_down(VK_RIGHT)) camera.set_rotation(camera.rotation_deg() + 1.0f);
+        if(Input::is_key_down(VK_ESCAPE)){
+            PostQuitMessage(0);
+        }   
 
+        ball.update(dt);
         
-        
+        // if(Input::is_key_down(VK_UP)) block.y -= block_speed * dt;
+        // if(Input::is_key_down(VK_DOWN)) block.y += block_speed * dt;
+        // if(Input::is_key_down(VK_LEFT)) block.x -= block_speed * dt;
+        // if(Input::is_key_down(VK_RIGHT)) block.x += block_speed * dt;
+      
         gfx.begin_draw();
-        gfx.clear(background_c);
-
-        camera.apply(gfx.target(),screen);
-
-        gfx.set_color(blue);
-        for(int i = 0; i< 10; i++)
-        {
-            rect_t temp = block;
-            temp.x *= i;
-            gfx.fill_rect(temp);
-            
-        }
-        brown_ball.draw(_brown_ball_coords);
-
-        camera.reset(gfx.target());
+        gfx.clear(black);
 
         
-        hud.set_color(black);
-        hud.draw(L"Camera X: " + std::to_wstring((int)camera.x()), camera_x_rect);
-        hud.draw(L"Camera Y: " + std::to_wstring((int)camera.y()), camera_y_rect);
-        hud.draw(L"Zoom: " + std::to_wstring(camera.zoom()), zoom_rect);
+        
+        ball.draw();
+        // gfx.fill_rect(block, color_c::gold_c);
 
+        
         gfx.end_draw();
   
     }

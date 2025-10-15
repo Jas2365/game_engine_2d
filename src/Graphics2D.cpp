@@ -24,7 +24,7 @@ LRESULT CALLBACK Graphics2D::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
     return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 
-bool Graphics2D::init(HINSTANCE hInst, int width, int height, const std::wstring &title)
+bool Graphics2D::init(HINSTANCE hInst, screen_t screen, const std::wstring &title)
 {
     WNDCLASSW wc = {};
     wc.lpfnWndProc = WindowProc;
@@ -38,7 +38,7 @@ bool Graphics2D::init(HINSTANCE hInst, int width, int height, const std::wstring
                             WS_OVERLAPPEDWINDOW,
                             CW_USEDEFAULT,
                             CW_USEDEFAULT,
-                            width, height, 
+                            screen.width, screen.height, 
                             nullptr, nullptr,
                             hInst,
                             nullptr    
@@ -110,8 +110,10 @@ void Graphics2D::set_color(color_t &color)
     m_brush->SetColor(D2D1::ColorF(color.r, color.g, color.b));
 }
 
-void Graphics2D::draw_line(line_t &line, float thickness)
+void Graphics2D::draw_line(line_t &line, color_t color, float thickness)
 {
+    auto old_color =  m_brush->GetColor();
+    m_brush->SetColor(D2D1::ColorF(color.r, color.g, color.b));
     m_target->DrawLine(
                 D2D1::Point2F(
                     line.x1, 
@@ -124,10 +126,13 @@ void Graphics2D::draw_line(line_t &line, float thickness)
                 m_brush, 
                 thickness
             );
+    m_brush->SetColor(old_color);
 }
 
-void Graphics2D::draw_rect(rect_t &rect, float thickness)
+void Graphics2D::draw_rect(rect_t &rect, color_t color, float thickness)
 {
+    auto old_color =  m_brush->GetColor();
+    m_brush->SetColor(D2D1::ColorF(color.r, color.g, color.b));
     m_target->DrawRectangle(
                 D2D1::RectF(
                     rect.x, 
@@ -137,11 +142,15 @@ void Graphics2D::draw_rect(rect_t &rect, float thickness)
                 ), 
                 m_brush, 
                 thickness
-            );
+            );   
+    m_brush->SetColor(old_color);
 }
 
-void Graphics2D::fill_rect(rect_t &rect)
+void Graphics2D::fill_rect(rect_t &rect, color_t color)
 {
+    auto old_color =  m_brush->GetColor();
+    m_brush->SetColor(D2D1::ColorF(color.r, color.g, color.b));
+    
     m_target->FillRectangle(
                 D2D1::RectF(
                     rect.x,
@@ -151,10 +160,14 @@ void Graphics2D::fill_rect(rect_t &rect)
                 ),
                 m_brush
             );
+    m_brush->SetColor(old_color);
 }
 
-void Graphics2D::draw_circle(circle_t &circle, float thickness)
+void Graphics2D::draw_circle(circle_t &circle, color_t color, float thickness)
 {
+    auto old_color =  m_brush->GetColor();
+    m_brush->SetColor(D2D1::ColorF(color.r, color.g, color.b));
+    
     m_target->DrawEllipse(
                 D2D1::Ellipse(
                     D2D1::Point2F(
@@ -167,11 +180,15 @@ void Graphics2D::draw_circle(circle_t &circle, float thickness)
                 m_brush, 
                 thickness
             );
+    m_brush->SetColor(old_color);
 }
 
-void Graphics2D::fill_circle(circle_t &circle)
+void Graphics2D::fill_circle(circle_t &circle, color_t color)
 {
-    m_target->DrawEllipse(
+    auto old_color =  m_brush->GetColor();
+    m_brush->SetColor(D2D1::ColorF(color.r, color.g, color.b));
+    
+    m_target->FillEllipse(
                 D2D1::Ellipse(
                     D2D1::Point2F(
                         circle.x, 
@@ -182,6 +199,7 @@ void Graphics2D::fill_circle(circle_t &circle)
                 ),
                 m_brush
             );
+    m_brush->SetColor(old_color);
 }
 
 ID2D1Bitmap *Graphics2D::load_bitmap(const std::wstring &filename)

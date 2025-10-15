@@ -18,7 +18,7 @@ public:
   Graphics2D();
   ~Graphics2D();
 
-  bool init(HINSTANCE hInst, int width, int height, const std::wstring& title);
+  bool init(HINSTANCE hInst, screen_t screen, const std::wstring& title);
   bool process_messages();
 
   void begin_draw();
@@ -27,13 +27,13 @@ public:
   void clear(color_t &color);
   void set_color(color_t &color);
   
-  void draw_line(line_t &line, float thickness = 1.f );
+  void draw_line(line_t &line, color_t color, float thickness = 1.f );
   
-  void draw_rect(rect_t &rect, float thickness = 1.f);
-  void fill_rect(rect_t &rect);
+  void draw_rect(rect_t &rect, color_t color, float thickness = 1.f);
+  void fill_rect(rect_t &rect, color_t color);
   
-  void draw_circle(circle_t &circle, float thickness = 1.f);
-  void fill_circle(circle_t &circle);
+  void draw_circle(circle_t &circle, color_t color, float thickness = 1.f);
+  void fill_circle(circle_t &circle, color_t color);
   
   ID2D1Bitmap* load_bitmap(const std::wstring& filename);
 
