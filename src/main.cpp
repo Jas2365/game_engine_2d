@@ -6,7 +6,7 @@
 #include <Input.hpp>
 #include <Time.hpp>
 #include <Colors.hpp>
-
+#include <ball.hpp>
 
 #define window_screen_width     800
 #define window_screen_height    600
@@ -16,55 +16,9 @@
 screen_t window_screen = { window_screen_width, window_screen_height };
 screen_t visible_screen = { window_screen.width - offset_window_width, window_screen.height - offset_window_height };
 
-class Ball {
-private:
-    circle_t m_ball;
-    color_t m_color;
-    pos2_t m_ball_speed = {300.f, 300.f};
-    screen_t m_screen;
-
-public:
-    Ball(screen_t screen, circle_t circle, color_t color) : m_screen(screen),  m_ball(circle), m_color(color) {}
-    
-    void draw(){
-       
-        gfx_fill_circle(m_ball, m_color);
-        gfx_draw_circle(m_ball, color_c::white_c);
-    }
-
-    void update(float dt) {
-        
-        m_ball.x += m_ball_speed.x * dt;
-        m_ball.y += m_ball_speed.y * dt;
-        
-        // bounce hor
-        if(m_ball.x - m_ball.r < 0){
-            m_ball.x = m_ball.r;
-            m_ball_speed.x *= -1;
-        }
-
-        if(m_ball.x + m_ball.r  >= m_screen.width){
-            m_ball.x = m_screen.width - m_ball.r;
-            m_ball_speed.x *= -1;
-        }
-
-        if(m_ball.y - m_ball.r < 0){
-            m_ball.y = m_ball.r;
-            m_ball_speed.y *= -1;
-        }
-
-        if(m_ball.y + m_ball.r >= m_screen.height){
-            m_ball.y = m_screen.height - m_ball.r;
-            m_ball_speed.y *= -1;
-        }
-    }
-
-};
 
 
 int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE, PWSTR, int){
-   
-   
 
     color_t blue         = {0, 0, 255 };
     color_t black        = {0, 0, 0 };
@@ -85,9 +39,11 @@ int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE, PWSTR, int){
     circle_t _ball_3 = { 500,  400, 10};
     rect_t block = { 50, 50, 50, 50};
 
-    Ball ball(visible_screen, _ball, color_c::red_c);
-    Ball ball_2(visible_screen, _ball_2, color_c::blue_c);
-    Ball ball_3(visible_screen, _ball_3, color_c::green_c);
+    pos2_t speed = {500.f, 500.f};
+
+    Ball ball(visible_screen, _ball, color_c::red_c, speed);
+    Ball ball_2(visible_screen, _ball_2, color_c::blue_c, speed);
+    Ball ball_3(visible_screen, _ball_3, color_c::green_c, speed);
     
     float block_speed = 400.f;
 
