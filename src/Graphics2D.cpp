@@ -40,6 +40,16 @@ void Graphics2D::shutdown()
     if(m_hwnd) m_hwnd = nullptr; 
 }
 
+Graphics2D::~Graphics2D()
+{
+    if(m_brush) m_brush->Release();
+    if(m_target) m_target->Release();
+    if(m_factory) m_factory->Release();
+    if(m_wic_factory) m_wic_factory->Release();
+    if(m_dwrite_factory) m_dwrite_factory->Release();
+    if(m_hwnd) m_hwnd = nullptr; 
+}
+
 LRESULT CALLBACK Graphics2D::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     if(msg == WM_DESTROY) PostQuitMessage(0);
     return DefWindowProcW(hwnd, msg, wParam, lParam);
