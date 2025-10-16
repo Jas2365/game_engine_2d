@@ -3,6 +3,7 @@ build = build
 src = src
 include = -Iinclude
 sprites = $(include)/sprites
+collisions = $(include)/collisions
 
 # files
 src_files = $(wildcard $(src)/*.cpp)
@@ -21,7 +22,7 @@ cflags = -O2 -ld2d1 -lole32 -loleaut32 -luuid -static -lgdi32 -luser32 -municode
 all: build run
 
 build: 
-	$(cxx) $(include) $(sprites) $(src_files) $(sub_src_files) -o $(target) $(cflags)
+	$(cxx) $(include) $(sprites) $(collisions)  $(src_files) $(sub_src_files) -o $(target) $(cflags)
 
 run:
 	./$(target)

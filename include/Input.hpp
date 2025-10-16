@@ -20,3 +20,4 @@ private:
     static std::array<bool, 256> m_prev_keys;
 
 };
+

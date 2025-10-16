@@ -34,13 +34,15 @@ public:
   
   void draw_circle(circle_t &circle, color_t color, float thickness = 1.f);
   void fill_circle(circle_t &circle, color_t color);
-  
+
   ID2D1Bitmap* load_bitmap(const std::wstring& filename);
 
   void draw_bitmap_rotated(ID2D1Bitmap* bmp, rect_t &rect, float deg, float scale = 1.f , float opacity =1.f);
-
+  
   ID2D1HwndRenderTarget* target() const { return m_target; }
   IDWriteFactory* text_factory() const { return m_dwrite_factory; }
+
+  void shutdown();
 
 private:
   Graphics2D() = default;
@@ -117,4 +119,8 @@ inline ID2D1HwndRenderTarget* gfx_target() {
 
 inline IDWriteFactory* gfx_text_factory() {
   return Graphics2D::get().text_factory();
+}
+
+inline void gfx_shutdown(){
+  Graphics2D::get().shutdown();
 }

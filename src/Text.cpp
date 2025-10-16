@@ -1,9 +1,14 @@
 #include <Text.hpp>
 
-Text::Text(Graphics2D *gfx, const std::wstring &font_family, float font_size) 
-:  m_gfx(gfx)
+Text& Text::get() {
+    static Text instance;
+    return instance;
+}
+
+void Text::init(const std::wstring &font_family, float font_size) 
 {
-    gfx->text_factory()->CreateTextFormat(
+
+    Graphics2D::get().text_factory()->CreateTextFormat(
         font_family.c_str(),
         nullptr, 
         DWRITE_FONT_WEIGHT_NORMAL,
@@ -14,11 +19,10 @@ Text::Text(Graphics2D *gfx, const std::wstring &font_family, float font_size)
         &m_format
     );
 
-    gfx->target()->CreateSolidColorBrush(
+    Graphics2D::get().target()->CreateSolidColorBrush(
         D2D1::ColorF(1,1,1),
         &m_brush
     );
-
 }
 
 Text::~Text() {
@@ -38,7 +42,7 @@ void Text::draw(const std::wstring &text, rect_t &text_container) {
                                     text_container.y + text_container.h
                                 );
     
-    m_gfx->target()->DrawTextW(
+    Graphics2D::get().target()->DrawTextW(
                             text.c_str(),
                             (UINT32)text.size(),
                             m_format,

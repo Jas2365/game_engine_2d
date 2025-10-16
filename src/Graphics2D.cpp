@@ -14,14 +14,41 @@ Graphics2D& Graphics2D::get() {
     return instance;
 }
 
-Graphics2D::~Graphics2D() {
+void Graphics2D::shutdown()
+{
+    
+    if(m_brush) {
+        m_brush->Release(); 
+        m_brush = nullptr;  
+    }
+    if(m_target) {
+        m_target->Release(); 
+        m_target = nullptr;  
+    }
+    if(m_factory) {
+        m_factory->Release(); 
+        m_factory = nullptr;  
+    }
+    if(m_wic_factory) {
+        m_wic_factory->Release(); 
+        m_wic_factory = nullptr;  
+    }
+    if(m_dwrite_factory) {
+        m_dwrite_factory->Release(); 
+        m_dwrite_factory = nullptr;  
+    }
+    if(m_hwnd) m_hwnd = nullptr; 
+}
+
+Graphics2D::~Graphics2D()
+{
     if(m_brush) m_brush->Release();
     if(m_target) m_target->Release();
     if(m_factory) m_factory->Release();
     if(m_wic_factory) m_wic_factory->Release();
     if(m_dwrite_factory) m_dwrite_factory->Release();
+    if(m_hwnd) m_hwnd = nullptr; 
 }
-
 
 LRESULT CALLBACK Graphics2D::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam){
     if(msg == WM_DESTROY) PostQuitMessage(0);
@@ -97,6 +124,7 @@ bool Graphics2D::process_messages()
 }
 
 void Graphics2D::begin_draw() {
+    // m_target->SetTransform(D2D1::Matrix3x2F::Identity());
     m_target->BeginDraw();
 }
 
