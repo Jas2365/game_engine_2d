@@ -46,7 +46,7 @@ public:
 
 private:
   Graphics2D() = default;
-  ~Graphics2D();
+  ~Graphics2D() = default;
   Graphics2D(const Graphics2D&) = delete;
   Graphics2D& operator=(const Graphics2D&) = delete;
 
